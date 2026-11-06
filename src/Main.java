@@ -1,19 +1,26 @@
 import java.util.Scanner;
 
+/**
+ * Точка входа в программу (Консольное меню).
+ * Используется современный синтаксис Unnamed Classes (Java 21+).
+ */
 void main() {
+    // Инициализация сканера для чтения ввода и менеджера устройств
     Scanner scanner = new Scanner(System.in);
     DeviceManager manager = new DeviceManager();
 
+    // Предзаполнение списка для удобства демонстрации
     manager.addDevice(new Smartphone("Apple"));
     manager.addDevice(new Tablet("Samsung"));
     manager.addDevice(new Computer("ASUS"));
 
+    // Бесконечный цикл для работы меню
     while (true) {
         System.out.println("\n=== МЕНЮ УПРАВЛЕНИЯ СЕТЕВЫМИ УСТРОЙСТВАМИ ===");
         System.out.println("1. Добавить устройство");
         System.out.println("2. Удалить устройство");
         System.out.println("3. Изменить свойства устройства");
-        System.out.println("4. Функциональная работа с устройствами");
+        System.out.println("4. Функциональная работа с устройствами (Подключение/Отключение/Сопряжение)");
         System.out.println("5. Показать все устройства");
         System.out.println("6. Рандомизировать свойства устройств");
         System.out.println("7. [Бонус] Симуляция передачи данных");
@@ -22,6 +29,7 @@ void main() {
 
         String choice = scanner.nextLine();
 
+        // Обработка выбора пользователя
         switch (choice) {
             case "1" -> {
                 // ДОБАВЛЕНИЕ
@@ -45,11 +53,61 @@ void main() {
                 if (manager.removeDevice(id)) System.out.println("Удалено.");
                 else System.out.println("Не найдено.");
             }
-            case "3" -> System.out.println(">> Изменение свойств (в разработке)");
-            case "4" -> System.out.println(">> Функциональная работа (в разработке)");
-            case "5" -> manager.showAllDevices(); // ПРОСМОТР (п. 3.4)
-            case "6" -> System.out.println(">> Рандомизация (в разработке)");
-            case "7" -> System.out.println(">> Симуляция передачи (в разработке)");
+            case "3" -> {
+                // ИЗМЕНЕНИЕ СВОЙСТВ
+                manager.showAllDevices();
+                System.out.print("Введите ID устройства для изменения: ");
+                String id = scanner.nextLine();
+                var dev = manager.findDevice(id);
+                if (dev != null) {
+                    System.out.print("Введите нового производителя: ");
+                    dev.setManufacturer(scanner.nextLine());
+                    System.out.println("Свойства обновлены.");
+                } else {
+                    System.out.println("Устройство не найдено.");
+                }
+            }
+            case "4" -> {
+                // ФУНКЦИОНАЛЬНАЯ РАБОТА
+                manager.showAllDevices();
+                System.out.print("Введите ID устройства для операций: ");
+                String id = scanner.nextLine();
+                var dev = manager.findDevice(id);
+                if (dev == null) { System.out.println("Не найдено."); break; }
+
+                System.out.print("1-Подключиться к интерфейсу, 2-Отключиться, 3-Сопряжение: ");
+                String subChoice = scanner.nextLine();
+                switch (subChoice) {
+                    case "1" -> {
+                        System.out.print("Интерфейс (Wi-Fi/Bluetooth/Ethernet): ");
+                        dev.connect(scanner.nextLine());
+                    }
+                    case "2" -> dev.disconnect();
+                    case "3" -> {
+                        System.out.print("Введите ID второго устройства для сопряжения: ");
+                        var dev2 = manager.findDevice(scanner.nextLine());
+                        if (dev2 != null) dev.pairWith(dev2);
+                        else System.out.println("Второе устройство не найдено.");
+                    }
+                    default -> System.out.println("Неверный выбор.");
+                }
+            }
+            case "5" -> manager.showAllDevices();
+            case "6" -> {
+                // РАНДОМИЗАЦИЯ
+                manager.getDevices().forEach(NetworkDevice::randomizeProperties);
+                System.out.println("Все свойства успешно рандомизированы!");
+                manager.showAllDevices();
+            }
+            case "7" -> {
+                // СИМУЛЯЦИЯ ПЕРЕДАЧИ
+                manager.showAllDevices();
+                System.out.print("ID источника: ");
+                String src = scanner.nextLine();
+                System.out.print("ID получателя: ");
+                String trg = scanner.nextLine();
+                manager.simulateDataTransfer(src, trg);
+            }
             case "0" -> {
                 System.out.println("Выход...");
                 return;
