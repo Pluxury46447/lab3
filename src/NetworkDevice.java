@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 /**
  * Абстрактный класс, представляющий сетевое устройство.
  */
@@ -12,8 +13,10 @@ public abstract class NetworkDevice {
 
     // Список идентификаторов устройств, к которым подключено данное устройство
     protected List<String> connectedDeviceIds;
+
     // Список поддерживаемых сетевых интерфейсов
     protected List<String> networkInterfaces;
+
     public NetworkDevice(String manufacturer, List<String> networkInterfaces) {
         this.id = UUID.randomUUID().toString();
         this.manufacturer = manufacturer;
@@ -21,14 +24,17 @@ public abstract class NetworkDevice {
         this.connectedDeviceIds = new ArrayList<>();
         this.networkInterfaces = new ArrayList<>(networkInterfaces);
     }
-    //Абстрактные методы
+
+    // --- Абстрактные методы (п. 2.1) ---
     public abstract void connect(String interfaceName);
     public abstract void disconnect();
     public abstract void pairWith(NetworkDevice other);
-    // 2 дополнительных метода: вывод детальной информации и рандомизация свойств
+
+    // --- Дополнительный функционал (п. 4) ---
     public abstract String getDetailedInfo();
     public abstract void randomizeProperties();
-    //Геттеры и сеттеры
+
+    // --- Геттеры и сеттеры ---
     public String getId() { return id; }
     public String getManufacturer() { return manufacturer; }
     public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
