@@ -25,3 +25,14 @@ public abstract class NetworkDevice {
     public abstract void connect(String interfaceName);
     public abstract void disconnect();
     public abstract void pairWith(NetworkDevice other);
+    // 2 дополнительных метода: вывод детальной информации и рандомизация свойств
+    public abstract String getDetailedInfo();
+    public abstract void randomizeProperties();
+    //Геттеры и сеттеры
+    public String getId() { return id; }
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public boolean isConnected() { return isConnected; }
+    public List<String> getConnectedDeviceIds() { return connectedDeviceIds; }
+    public List<String> getNetworkInterfaces() { return networkInterfaces; }
+}
