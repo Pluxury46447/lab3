@@ -4,14 +4,14 @@ import java.util.Random;
 /**
  * Класс-наследник, представляющий компьютер.
  */
+//компьютер получает от родителя айди производ списки и обяз реал абстр методы
 public class Computer extends NetworkDevice {
-
-    // Уникальные свойства (п. 5)
+    // Уникальные свойства
     private int ramGB;
     private String cpuModel;
-    private boolean hasDedicatedGPU;
-    private int usbPorts;
-
+    private boolean hasDedicatedGPU;//есть ли дискр вид
+    private int usbPorts;//колво свободных usb портов
+//super вызов констр родителя.комп передаёт три интр
     public Computer(String manufacturer) {
         super(manufacturer, List.of("Ethernet", "Wi-Fi", "Bluetooth"));
         this.ramGB = 16;
@@ -20,11 +20,12 @@ public class Computer extends NetworkDevice {
         this.usbPorts = 6;
     }
 
-    // --- Уникальные методы (п. 5) ---
+    //Уникальные методы
+    //вывод о комп кода с указание модели проц и объёма озу
     public void compileCode() {
         System.out.println("Компиляция Java-кода на " + cpuModel + " (ОЗУ: " + ramGB + "ГБ)... Успешно!");
     }
-
+//проверка дискр видюхи для игр
     public void playGame(String gameName) {
         if (hasDedicatedGPU) {
             System.out.println("Запуск " + gameName + " на максимальных настройках графики.");
@@ -32,12 +33,12 @@ public class Computer extends NetworkDevice {
             System.out.println("Запуск " + gameName + " на минимальных настройках (интегрированная графика).");
         }
     }
-
+//увелич объём
     public void upgradeRAM(int extraGB) {
         this.ramGB += extraGB;
         System.out.println("ОЗУ увеличено до " + ramGB + " ГБ.");
     }
-
+//пров есть ли свободные порты и если есть то подкл устройство и уменьш на 1 счётчик
     public void connectExternalDevice(String device) {
         if (usbPorts > 0) {
             usbPorts--;
@@ -47,9 +48,10 @@ public class Computer extends NetworkDevice {
         }
     }
 
-    // --- Реализация абстрактных методов ---
+    // Реализация абстрактных методов
     @Override
     public void connect(String interfaceName) {
+        //проверяем поддержку интерфейса
         if (networkInterfaces.contains(interfaceName)) {
             this.isConnected = true;
             System.out.println("Компьютер подключен к " + interfaceName);
@@ -57,16 +59,17 @@ public class Computer extends NetworkDevice {
             System.out.println("Компьютер не поддерживает " + interfaceName);
         }
     }
-
+//откл от сети
     @Override
     public void disconnect() {
         this.isConnected = false;
         this.connectedDeviceIds.clear();
         System.out.println("Компьютер отключен от сети.");
     }
-
+//полиморфизм. сопряжение.
     @Override
     public void pairWith(NetworkDevice other) {
+        //при том что если два устройства в сети
         if (this.isConnected && other.isConnected()) {
             this.connectedDeviceIds.add(other.getId());
             other.getConnectedDeviceIds().add(this.getId());
@@ -75,7 +78,7 @@ public class Computer extends NetworkDevice {
             System.out.println("Оба устройства должны быть подключены к сети для сопряжения.");
         }
     }
-
+//на случайные знач
     @Override
     public void randomizeProperties() {
         Random rand = new Random();
@@ -83,14 +86,14 @@ public class Computer extends NetworkDevice {
         this.hasDedicatedGPU = rand.nextBoolean();
         this.usbPorts = rand.nextInt(2, 10);
     }
-
+//собираем в одну строчку
     @Override
     public String getDetailedInfo() {
         return String.format("Компьютер [ID: %s, Производитель: %s, CPU: %s, ОЗУ: %d ГБ, Видеокарта: %s, USB: %d]",
                 id.substring(0, 8), manufacturer, cpuModel, ramGB, hasDedicatedGPU ? "Дискретная" : "Интегрированная", usbPorts);
     }
 
-    // --- Сеттеры для изменения свойств (п. 3.3) ---
+    //Сеттеры для изменения свойств
     public void setRamGB(int ramGB) { this.ramGB = ramGB; }
     public void setCpuModel(String cpuModel) { this.cpuModel = cpuModel; }
 }

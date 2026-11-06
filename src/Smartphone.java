@@ -1,29 +1,29 @@
 import java.util.List;
 import java.util.Random;
-
 /**
  * Класс-наследник, представляющий смартфон.
  */
+//extends - наследование.смартфон является разновидностью сет устройства.
+// он забирает себе все поля и методы из networkDevice
 public class Smartphone extends NetworkDevice {
-
     // Уникальные свойства (п. 5)
-    private int batteryLevel;
+    private int batteryLevel;//инкапс.изменить можно только сеттерами
     private int cameraMegapixels;
     private String osVersion;
     private double screenSize;
-
+//конструктор. вызывается при new.
     public Smartphone(String manufacturer) {
-        super(manufacturer, List.of("Wi-Fi", "Bluetooth"));
+        super(manufacturer, List.of("Wi-Fi", "Bluetooth"));//вызов констр родителя. передаём производителяи задаём список инт
         this.batteryLevel = 100;
         this.cameraMegapixels = 12;
         this.osVersion = "Android 14";
         this.screenSize = 6.1;
     }
 
-    // --- Уникальные методы (п. 5) ---
+    // Уникальные методы
     public void takePhoto() {
-        if (batteryLevel > 5) {
-            batteryLevel -= 5;
+        if (batteryLevel > 5) {//если ок
+            batteryLevel -= 5;//тратим 5 единиц
             System.out.println("Сделан снимок на камеру " + cameraMegapixels + " Мп. Заряд: " + batteryLevel + "%");
         } else {
             System.out.println("Недостаточно заряда для фото!");
@@ -44,17 +44,16 @@ public class Smartphone extends NetworkDevice {
         System.out.println("Смартфон полностью заряжен.");
     }
 
-    // --- Реализация абстрактных методов ---
-    @Override
+    //Реализация абстрактных методов,переопределение методов,которые были добавлены в родителе
+    @Override//аннотация
     public void connect(String interfaceName) {
         if (networkInterfaces.contains(interfaceName)) {
-            this.isConnected = true;
+            this.isConnected = true;//если вай фай есть в списке networkInterfaces.есть - тру
             System.out.println("Смартфон подключен к " + interfaceName);
         } else {
             System.out.println("Смартфон не поддерживает " + interfaceName);
         }
     }
-
     @Override
     public void disconnect() {
         this.isConnected = false;
@@ -62,17 +61,19 @@ public class Smartphone extends NetworkDevice {
         System.out.println("Смартфон отключен от сети.");
     }
 
+    //полиморфизм. параметр озер имеет тип нетворкдевайс.сюда можно передать планшет и пк
+    //берём айди другого и кладём себе в список.
     @Override
     public void pairWith(NetworkDevice other) {
         if (this.isConnected && other.isConnected()) {
             this.connectedDeviceIds.add(other.getId());
-            other.getConnectedDeviceIds().add(this.getId());
+            other.getConnectedDeviceIds().add(this.getId());//а свой айди отдаём ему
             System.out.println("Смартфон сопряжен с устройством: " + other.getManufacturer());
         } else {
             System.out.println("Оба устройства должны быть подключены к сети для сопряжения.");
         }
     }
-
+//меняем значения на случайные в заданных границах
     @Override
     public void randomizeProperties() {
         Random rand = new Random();
@@ -80,14 +81,14 @@ public class Smartphone extends NetworkDevice {
         this.cameraMegapixels = rand.nextInt(8, 109);
         this.screenSize = 5.0 + (10.0 - 5.0) * rand.nextDouble();
     }
-
+//собиреам данные в одну строчку (свои и родительские)
     @Override
     public String getDetailedInfo() {
         return String.format("Смартфон [ID: %s, Производитель: %s, Заряд: %d%%, Камера: %d Мп, ОС: %s, Экран: %.1f\"]",
                 id.substring(0, 8), manufacturer, batteryLevel, cameraMegapixels, osVersion, screenSize);
-    }
+    }//обрезаем до 8 символов для читаемости
 
-    // --- Сеттеры для изменения свойств (п. 3.3) ---
+    // Сеттеры для изменения свойств
     public void setBatteryLevel(int batteryLevel) { this.batteryLevel = batteryLevel; }
     public void setCameraMegapixels(int cameraMegapixels) { this.cameraMegapixels = cameraMegapixels; }
     public void setOsVersion(String osVersion) { this.osVersion = osVersion; }
