@@ -1,13 +1,51 @@
 import java.util.List;
+import java.util.Random;
 
-// Создание класса-наследника Computer
 public class Computer extends NetworkDevice {
 
+    // Уникальные свойства компьютера
+    private int ramGB;
+    private String cpuModel;
+    private boolean hasDedicatedGPU;
+    private int usbPorts;
+
     public Computer(String manufacturer) {
-        // Компьютер поддерживает Ethernet, Wi-Fi и Bluetooth
         super(manufacturer, List.of("Ethernet", "Wi-Fi", "Bluetooth"));
+        // Инициализация уникальных свойств
+        this.ramGB = 16;
+        this.cpuModel = "Intel Core i7";
+        this.hasDedicatedGPU = true;
+        this.usbPorts = 6;
     }
 
+    // Уникальные методы компьютера
+    public void compileCode() {
+        System.out.println("Компиляция Java-кода на " + cpuModel + " (ОЗУ: " + ramGB + "ГБ)... Успешно!");
+    }
+
+    public void playGame(String gameName) {
+        if (hasDedicatedGPU) {
+            System.out.println("Запуск " + gameName + " на максимальных настройках графики.");
+        } else {
+            System.out.println("Запуск " + gameName + " на минимальных настройках (интегрированная графика).");
+        }
+    }
+
+    public void upgradeRAM(int extraGB) {
+        this.ramGB += extraGB;
+        System.out.println("ОЗУ увеличено до " + ramGB + " ГБ.");
+    }
+
+    public void connectExternalDevice(String device) {
+        if (usbPorts > 0) {
+            usbPorts--;
+            System.out.println("Подключено внешнее устройство: " + device + ". Свободных USB: " + usbPorts);
+        } else {
+            System.out.println("Нет свободных USB-портов!");
+        }
+    }
+
+    //Абстрактные методы
     @Override
     public void connect(String interfaceName) {
         if (networkInterfaces.contains(interfaceName)) {
@@ -36,10 +74,9 @@ public class Computer extends NetworkDevice {
         }
     }
 
-    // Заглушки
+    // Заглушки пока остаются
     @Override
     public void randomizeProperties() {
-        // Пока ничего
     }
 
     @Override
