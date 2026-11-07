@@ -7,43 +7,53 @@ import java.util.Random;
  */
 public class DeviceManager {
     // Единый список для объектов разных классов (Полиморфизм)
-    //файнал - ссылка на список не может быть переприсвоена(но сами элементы внутри списка можно удалять и доб)
-    //в лист можно класть любые объекты которые насл от нетворк девайс
-    //нью эрэй - созд экзэмпляр arraylist
+    // final - ссылка на список не может быть переприсвоена (но сами элементы внутри списка можно удалять и добавлять)
+    // в List можно класть любые объекты, которые наследуются от NetworkDevice
+    // new ArrayList<>() - создаём экземпляр ArrayList
     private final List<NetworkDevice> devices = new ArrayList<>();
-//добавление.принимает любое устройство типа нетворкдевайс (или его насл) и в конец списка
+
+    // Добавление. Принимает любое устройство типа NetworkDevice (или его наследника) и добавляет в конец списка
     public void addDevice(NetworkDevice device) {
         devices.add(device);
     }
-//лямбда выражение- для каждого элемента d проверяем полное совп и начинается с введенной строки
+
+    // Лямбда-выражение - для каждого элемента d проверяем полное совпадение и начинается с введенной строки
     public boolean removeDevice(String id) {
         return devices.removeIf(d -> d.getId().equals(id) || d.getId().startsWith(id));
     }
 
     public NetworkDevice findDevice(String id) {
-        return devices.stream()//прев список в поток данных для обработки
-                .filter(d -> d.getId().equals(id) || d.getId().startsWith(id))//ост ток те устройства чей айди совп
-                .findFirst()//берём первый найденный элемент
-                .orElse(null);//если ничего то нал
-    }//полиморфизм: из мэйн вызываем файнд девайс, получаем нетфоркдевайс, а потом проверяем через instanceof кто это на самом деле
+        return devices.stream()                                        // превращаем список в поток данных для обработки
+                .filter(d -> d.getId().equals(id) || d.getId().startsWith(id)) // оставляем только те устройства, чей ID совпадает
+                .findFirst()                                           // берём первый найденный элемент
+                .orElse(null);                                         // если ничего - null
+    }
+    // Полиморфизм: из Main вызываем findDevice, получаем NetworkDevice,
+    // а потом проверяем через instanceof, кто это на самом деле
 
     public void showAllDevices() {
         if (devices.isEmpty()) {
             System.out.println("Список устройств пуст.");
             return;
-        }//циклом проходимся
+        }
+        // Циклом проходимся по списку
         for (var device : devices) {
             System.out.println(device.getDetailedInfo() + " | В сети: " + (device.isConnected() ? "Да" : "Нет"));
-        }//динамический полиморфизм()гет детэйлед инфо)(что реально лежит в девайс) и вызыв его переопр метод
-    }//тернарный оператор для красивого вывода
-//возвр ссылку на списо. инкапсуляция. мы не даём прямой доступ к полю девайсес но даём метод для чтения
+        }
+        // Динамический полиморфизм: вызываем getDetailedInfo() - JVM смотрит,
+        // что реально лежит в device, и вызывает его переопределённый метод
+        // Тернарный оператор для красивого вывода статуса
+    }
+
+    // Возвращает ссылку на список. Инкапсуляция: мы не даём прямой доступ к полю devices,
+    // но даём метод для чтения
     public List<NetworkDevice> getDevices() {
         return devices;
     }
 
     // Симуляция передачи данных
-    public void simulateDataTransfer(String sourceId, String targetId) {//строка айди которую ввёл пользователь
-        var source = findDevice(sourceId);//это то же самое если написать нетворк девайс
+    public void simulateDataTransfer(String sourceId, String targetId) { // строка ID, которую ввёл пользователь
+        var source = findDevice(sourceId); // var - это то же самое, если написать NetworkDevice
         var target = findDevice(targetId);
 
         if (source == null || target == null) {

@@ -11,7 +11,7 @@ public class Computer extends NetworkDevice {
     private String cpuModel;
     private boolean hasDedicatedGPU;//есть ли дискр вид
     private int usbPorts;//колво свободных usb портов
-//super вызов констр родителя.комп передаёт три интр
+    //super вызов констр родителя.комп передаёт три интр
     public Computer(String manufacturer) {
         super(manufacturer, List.of("Ethernet", "Wi-Fi", "Bluetooth"));
         this.ramGB = 16;
@@ -25,7 +25,7 @@ public class Computer extends NetworkDevice {
     public void compileCode() {
         System.out.println("Компиляция Java-кода на " + cpuModel + " (ОЗУ: " + ramGB + "ГБ)... Успешно!");
     }
-//проверка дискр видюхи для игр
+    //проверка дискр видюхи для игр
     public void playGame(String gameName) {
         if (hasDedicatedGPU) {
             System.out.println("Запуск " + gameName + " на максимальных настройках графики.");
@@ -33,12 +33,17 @@ public class Computer extends NetworkDevice {
             System.out.println("Запуск " + gameName + " на минимальных настройках (интегрированная графика).");
         }
     }
-//увелич объём
+    //увелич объём
+    // ДОБАВЛЕНО: проверка extraGB > 0
     public void upgradeRAM(int extraGB) {
-        this.ramGB += extraGB;
-        System.out.println("ОЗУ увеличено до " + ramGB + " ГБ.");
+        if (extraGB > 0) {
+            this.ramGB += extraGB;
+            System.out.println("ОЗУ увеличено до " + ramGB + " ГБ.");
+        } else {
+            System.out.println("Ошибка: количество ГБ для апгрейда должно быть положительным!");
+        }
     }
-//пров есть ли свободные порты и если есть то подкл устройство и уменьш на 1 счётчик
+    //пров есть ли свободные порты и если есть то подкл устройство и уменьш на 1 счётчик
     public void connectExternalDevice(String device) {
         if (usbPorts > 0) {
             usbPorts--;
@@ -59,14 +64,14 @@ public class Computer extends NetworkDevice {
             System.out.println("Компьютер не поддерживает " + interfaceName);
         }
     }
-//откл от сети
+    //откл от сети
     @Override
     public void disconnect() {
         this.isConnected = false;
         this.connectedDeviceIds.clear();
         System.out.println("Компьютер отключен от сети.");
     }
-//полиморфизм. сопряжение.
+    //полиморфизм. сопряжение.
     @Override
     public void pairWith(NetworkDevice other) {
         //при том что если два устройства в сети
@@ -78,7 +83,7 @@ public class Computer extends NetworkDevice {
             System.out.println("Оба устройства должны быть подключены к сети для сопряжения.");
         }
     }
-//на случайные знач
+    //на случайные знач
     @Override
     public void randomizeProperties() {
         Random rand = new Random();
@@ -86,7 +91,7 @@ public class Computer extends NetworkDevice {
         this.hasDedicatedGPU = rand.nextBoolean();
         this.usbPorts = rand.nextInt(2, 10);
     }
-//собираем в одну строчку
+    //собираем в одну строчку
     @Override
     public String getDetailedInfo() {
         return String.format("Компьютер [ID: %s, Производитель: %s, CPU: %s, ОЗУ: %d ГБ, Видеокарта: %s, USB: %d]",
@@ -94,6 +99,20 @@ public class Computer extends NetworkDevice {
     }
 
     //Сеттеры для изменения свойств
-    public void setRamGB(int ramGB) { this.ramGB = ramGB; }
-    public void setCpuModel(String cpuModel) { this.cpuModel = cpuModel; }
+    //верхняя граница 1024 ГБ
+    public void setRamGB(int ramGB) {
+        if (ramGB > 0 && ramGB <= 1024) {
+            this.ramGB = ramGB;
+        } else {
+            System.out.println("Ошибка: объём ОЗУ должен быть от 1 до 1024 ГБ! Значение не изменено.");
+        }
+    }
+
+    public void setCpuModel(String cpuModel) {
+        if (cpuModel != null && !cpuModel.isBlank()) {
+            this.cpuModel = cpuModel;
+        } else {
+            System.out.println("Ошибка: модель процессора не может быть пустой! Значение не изменено.");
+        }
+    }
 }

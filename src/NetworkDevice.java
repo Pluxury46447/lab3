@@ -35,7 +35,16 @@ public abstract class NetworkDevice {
     //Геттеры и сеттеры.инкапсуляция.доступ к полям через методы(из других классов напр прочитать нельзя)
     public String getId() { return id; }
     public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+
+    // проверка на пустую строку и null
+    public void setManufacturer(String manufacturer) {
+        if (manufacturer != null && !manufacturer.isBlank()) {
+            this.manufacturer = manufacturer;
+        } else {
+            System.out.println("Ошибка: производитель не может быть пустым! Значение не изменено.");
+        }
+    }
+
     public boolean isConnected() { return isConnected; }
     //возвр ссылку на список(если добавить извек то через этот метод)
     public List<String> getConnectedDeviceIds() { return connectedDeviceIds; }

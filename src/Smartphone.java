@@ -11,7 +11,7 @@ public class Smartphone extends NetworkDevice {
     private int cameraMegapixels;
     private String osVersion;
     private double screenSize;
-//конструктор. вызывается при new.
+    //конструктор. вызывается при new.
     public Smartphone(String manufacturer) {
         super(manufacturer, List.of("Wi-Fi", "Bluetooth"));//вызов констр родителя. передаём производителяи задаём список инт
         this.batteryLevel = 100;
@@ -73,7 +73,7 @@ public class Smartphone extends NetworkDevice {
             System.out.println("Оба устройства должны быть подключены к сети для сопряжения.");
         }
     }
-//меняем значения на случайные в заданных границах
+    //меняем значения на случайные в заданных границах
     @Override
     public void randomizeProperties() {
         Random rand = new Random();
@@ -81,15 +81,36 @@ public class Smartphone extends NetworkDevice {
         this.cameraMegapixels = rand.nextInt(8, 109);
         this.screenSize = 5.0 + (10.0 - 5.0) * rand.nextDouble();
     }
-//собиреам данные в одну строчку (свои и родительские)
+    //собиреам данные в одну строчку (свои и родительские)
     @Override
     public String getDetailedInfo() {
         return String.format("Смартфон [ID: %s, Производитель: %s, Заряд: %d%%, Камера: %d Мп, ОС: %s, Экран: %.1f\"]",
                 id.substring(0, 8), manufacturer, batteryLevel, cameraMegapixels, osVersion, screenSize);
     }//обрезаем до 8 символов для читаемости
 
+
     // Сеттеры для изменения свойств
-    public void setBatteryLevel(int batteryLevel) { this.batteryLevel = batteryLevel; }
-    public void setCameraMegapixels(int cameraMegapixels) { this.cameraMegapixels = cameraMegapixels; }
-    public void setOsVersion(String osVersion) { this.osVersion = osVersion; }
+    public void setBatteryLevel(int batteryLevel) {
+        if (batteryLevel >= 0 && batteryLevel <= 100) {
+            this.batteryLevel = batteryLevel;
+        } else {
+            System.out.println("Ошибка: заряд должен быть от 0 до 100! Значение не изменено.");
+        }
+    }
+    // верхняя граница 500 Мп
+    public void setCameraMegapixels(int cameraMegapixels) {
+        if (cameraMegapixels > 0 && cameraMegapixels <= 500) {
+            this.cameraMegapixels = cameraMegapixels;
+        } else {
+            System.out.println("Ошибка: разрешение камеры должно быть от 1 до 500 Мп! Значение не изменено.");
+        }
+    }
+
+    public void setOsVersion(String osVersion) {
+        if (osVersion != null && !osVersion.isBlank()) {
+            this.osVersion = osVersion;
+        } else {
+            System.out.println("Ошибка: версия ОС не может быть пустой! Значение не изменено.");
+        }
+    }
 }

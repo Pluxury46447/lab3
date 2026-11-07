@@ -10,7 +10,7 @@ public class Tablet extends NetworkDevice {
     private int storageGB;
     private double weightKg;//в кг дробное число
     private String screenResolution;//разр экрана
-//вызо конструктора родителя.знач по умолчанию
+    //вызо конструктора родителя.знач по умолчанию
     public Tablet(String manufacturer) {
         super(manufacturer, List.of("Wi-Fi", "Bluetooth"));
         this.hasStylus = false;
@@ -31,15 +31,20 @@ public class Tablet extends NetworkDevice {
     public void watchMovie() {
         System.out.println("Просмотр фильма в разрешении " + screenResolution);
     }
-//меняет состояние стилуса
+    //меняет состояние стилуса
     public void connectStylus() {
         this.hasStylus = true;
         System.out.println("Стилус подключен.");
     }
-//увелечение памяти
+    //увелечение памяти
+    // ДОБАВЛЕНО: проверка extraGB > 0
     public void expandStorage(int extraGB) {
-        this.storageGB += extraGB;
-        System.out.println("Память расширена до " + storageGB + " ГБ.");
+        if (extraGB > 0) {
+            this.storageGB += extraGB;
+            System.out.println("Память расширена до " + storageGB + " ГБ.");
+        } else {
+            System.out.println("Ошибка: количество ГБ для расширения должно быть положительным!");
+        }
     }
 
     // Реализация абстрактных методов.переопределение
@@ -52,14 +57,14 @@ public class Tablet extends NetworkDevice {
             System.out.println("Планшет не поддерживает " + interfaceName);
         }
     }
-//отключаем и очищ список сопр устр
+    //отключаем и очищ список сопр устр
     @Override
     public void disconnect() {
         this.isConnected = false;
         this.connectedDeviceIds.clear();
         System.out.println("Планшет отключен от сети.");
     }
-//полиморфизм.параметр  озер. сюда можно передать смартфон и комп
+    //полиморфизм.параметр  озер. сюда можно передать смартфон и комп
     @Override
     public void pairWith(NetworkDevice other) {
         if (this.isConnected && other.isConnected()) {
@@ -70,7 +75,7 @@ public class Tablet extends NetworkDevice {
             System.out.println("Оба устройства должны быть подключены к сети для сопряжения.");
         }
     }
-//меняем на случ значения
+    //меняем на случ значения
     //rand генерирует случ или целое число или дробное
     @Override
     public void randomizeProperties() {
@@ -79,14 +84,29 @@ public class Tablet extends NetworkDevice {
         this.storageGB = rand.nextInt(64, 1025);
         this.weightKg = 0.3 + (1.5 - 0.3) * rand.nextDouble();
     }
-//собираем все данные и свои и родительские
+    //собираем все данные и свои и родительские
     @Override
     public String getDetailedInfo() {
         return String.format("Планшет [ID: %s, Производитель: %s, Стилус: %s, Память: %d ГБ, Вес: %.2f кг, Экран: %s]",
                 id.substring(0, 8), manufacturer, hasStylus ? "Да" : "Нет", storageGB, weightKg, screenResolution);
     }
-
     // Сеттеры для изменения свойств
-    public void setStorageGB(int storageGB) { this.storageGB = storageGB; }
-    public void setScreenResolution(String screenResolution) { this.screenResolution = screenResolution; }
+    // верхняя граница 4096 ГБ
+    public void setStorageGB(int storageGB) {
+        if (storageGB > 0 && storageGB <= 4096) {
+            this.storageGB = storageGB;
+        } else {
+            System.out.println("Ошибка: объём памяти должен быть от 1 до 4096 ГБ! Значение не изменено.");
+        }
+    }
+
+    // список допустимых разрешений
+    public void setScreenResolution(String screenResolution) {
+        List<String> allowed = List.of("HD", "FullHD", "2K", "4K", "8K");
+        if (screenResolution != null && allowed.contains(screenResolution.trim())) {
+            this.screenResolution = screenResolution.trim();
+        } else {
+            System.out.println("Ошибка: разрешение должно быть одним из: HD, FullHD, 2K, 4K, 8K! Значение не изменено.");
+        }
+    }
 }

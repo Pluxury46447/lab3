@@ -61,19 +61,24 @@ void main() {
 
                 System.out.println("Выбрано устройство: " + dev.getManufacturer());
                 System.out.print("Изменить производителя? (1-Да, 0-Нет): ");
-                if (scanner.nextLine().equals("1")) {
+                String answer = scanner.nextLine().trim(); //trim() убирает пробелы
+                if (answer.equals("1")) {
                     System.out.print("Введите нового производителя: ");
                     dev.setManufacturer(scanner.nextLine());
+                } else if (!answer.equals("0")) {
+                    // ДОБАВЛЕНО: явная проверка, что введено не 0 и не 1
+                    System.out.println("Неверный выбор. Производитель не изменён.");
                 }
 
                 // Проверяем тип устройства с помощью instanceof
                 if (dev instanceof Smartphone phone) {
                     System.out.println("Свойства смартфона");
-                    System.out.print("Новый заряд батареи (0-100): ");
-                    phone.setBatteryLevel(Integer.parseInt(scanner.nextLine()));
+                    //используем readInt для безопасного ввода (защита от букв и отрицательных)
+                    int battery = readInt(scanner, "Новый заряд батареи (0-100): ");
+                    phone.setBatteryLevel(battery);
 
-                    System.out.print("Новое разрешение камеры (Мп): ");
-                    phone.setCameraMegapixels(Integer.parseInt(scanner.nextLine()));
+                    int camera = readInt(scanner, "Новое разрешение камеры (Мп): ");
+                    phone.setCameraMegapixels(camera);
 
                     System.out.print("Новая версия ОС: ");
                     phone.setOsVersion(scanner.nextLine());
@@ -81,8 +86,9 @@ void main() {
 
                 } else if (dev instanceof Tablet tablet) {
                     System.out.println("Свойства планшета");
-                    System.out.print("Новый объем памяти (ГБ): ");
-                    tablet.setStorageGB(Integer.parseInt(scanner.nextLine()));
+                    // ДОБАВЛЕНО: readInt
+                    int storage = readInt(scanner, "Новый объем памяти (ГБ): ");
+                    tablet.setStorageGB(storage);
 
                     System.out.print("Новое разрешение экрана: ");
                     tablet.setScreenResolution(scanner.nextLine());
@@ -90,8 +96,9 @@ void main() {
 
                 } else if (dev instanceof Computer comp) {
                     System.out.println("Свойства компьютера");
-                    System.out.print("Новый объем ОЗУ (ГБ): ");
-                    comp.setRamGB(Integer.parseInt(scanner.nextLine()));
+                    // ДОБАВЛЕНО: readInt
+                    int ram = readInt(scanner, "Новый объем ОЗУ (ГБ): ");
+                    comp.setRamGB(ram);
 
                     System.out.print("Новая модель процессора: ");
                     comp.setCpuModel(scanner.nextLine());
@@ -156,8 +163,9 @@ void main() {
                                 case "2" -> tablet.watchMovie();
                                 case "3" -> tablet.connectStylus();
                                 case "4" -> {
-                                    System.out.print("На сколько ГБ расширить: ");
-                                    tablet.expandStorage(Integer.parseInt(scanner.nextLine()));
+                                    // ДОБАВЛЕНО: readInt для защиты от букв
+                                    int extra = readInt(scanner, "На сколько ГБ расширить: ");
+                                    tablet.expandStorage(extra);
                                 }
                                 default -> System.out.println("Неверный выбор.");
                             }
@@ -176,8 +184,9 @@ void main() {
                                     comp.playGame(scanner.nextLine());
                                 }
                                 case "3" -> {
-                                    System.out.print("Сколько ГБ добавить: ");
-                                    comp.upgradeRAM(Integer.parseInt(scanner.nextLine()));
+                                    // ДОБАВЛЕНО: readInt для защиты от букв
+                                    int extra = readInt(scanner, "Сколько ГБ добавить: ");
+                                    comp.upgradeRAM(extra);
                                 }
                                 case "4" -> {
                                     System.out.print("Название устройства: ");
@@ -211,6 +220,20 @@ void main() {
                 return;
             }
             default -> System.out.println("Неверный ввод.");
+        }
+    }
+}
+
+// вспомогательный метод для безопасного ввода целого числа
+// Защищает от букв (NumberFormatException)
+int readInt(Scanner scanner, String prompt) {
+    while (true) {
+        System.out.print(prompt);
+        String input = scanner.nextLine().trim();
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: введите целое число!");
         }
     }
 }
