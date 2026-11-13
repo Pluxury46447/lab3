@@ -1,8 +1,12 @@
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 
 void main() {
     Scanner scanner = new Scanner(System.in);
     DeviceManager manager = new DeviceManager();//объект который хранит список устройств. все операции идут через него
+    // ЛАБА 4: имя файла по умолчанию
+    String dataFileName = "devices.txt";
 
     // Предзаполнение списка. полиморфизм.эд девайс принимает нетворк девайс, но передаём наследников
     manager.addDevice(new Smartphone("Apple"));
@@ -18,6 +22,9 @@ void main() {
         System.out.println("5. Показать все устройства");
         System.out.println("6. Рандомизировать свойства устройств");
         System.out.println("7. Симуляция передачи данных");
+        // ЛАБА 4: новые пункты меню
+        System.out.println("8. Загрузить устройства из файла");
+        System.out.println("9. Изменить имя файла для загрузки");
         System.out.println("0. Выход");
         System.out.print("Выберите действие: ");
 
@@ -214,6 +221,31 @@ void main() {
                 System.out.print("ID получателя: ");
                 String trg = scanner.nextLine();
                 manager.simulateDataTransfer(src, trg);
+            }
+            // ЛАБА 4: загрузка из файла
+            case "8" -> {
+                try (FileReader fr = new FileReader(dataFileName)) {
+                    DeviceFileReader reader = new DeviceFileReader();
+                    DeviceFileReader.ReadResult res = reader.read(fr);
+                    for (NetworkDevice d : res.devices) {
+                        manager.addDevice(d);
+                    }
+                    System.out.println("Загружено объектов: " + res.totalObjects);
+                    System.out.println("Успешно прочитано свойств: " + res.totalPropertiesRead);
+                    System.out.println("Не найдено свойств: " + res.totalPropertiesMissing);
+                    if (!res.errors.isEmpty()) {
+                        System.out.println("Ошибки:");
+                        for (String err : res.errors) System.out.println(" - " + err);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Ошибка чтения файла: " + e.getMessage());
+                }
+            }
+            // ЛАБА 4: изменение имени файла
+            case "9" -> {
+                System.out.print("Введите новое имя файла: ");
+                dataFileName = scanner.nextLine();
+                System.out.println("Имя файла изменено на: " + dataFileName);
             }
             case "0" -> {
                 System.out.println("Выход...");
