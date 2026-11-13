@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+
 /**
  * Класс-наследник, представляющий планшет.
  */
@@ -107,6 +108,19 @@ public class Tablet extends NetworkDevice {
             this.screenResolution = screenResolution.trim();
         } else {
             System.out.println("Ошибка: разрешение должно быть одним из: HD, FullHD, 2K, 4K, 8K! Значение не изменено.");
+        }
+    }
+
+    // ЛАБА 4: сеттеры для чтения из файла
+    public void setHasStylus(boolean hasStylus) {
+        this.hasStylus = hasStylus;
+    }
+
+    public void setWeightKg(double weightKg) {
+        if (weightKg > 0) {
+            this.weightKg = weightKg;
+        } else {
+            System.out.println("Ошибка: вес должен быть положительным! Значение не изменено.");
         }
     }
 }
