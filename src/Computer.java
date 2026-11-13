@@ -115,4 +115,17 @@ public class Computer extends NetworkDevice {
             System.out.println("Ошибка: модель процессора не может быть пустой! Значение не изменено.");
         }
     }
+
+    // ЛАБА 4: сеттеры для чтения из файла
+    public void setHasDedicatedGPU(boolean hasDedicatedGPU) {
+        this.hasDedicatedGPU = hasDedicatedGPU;
+    }
+
+    public void setUsbPorts(int usbPorts) {
+        if (usbPorts >= 0) {
+            this.usbPorts = usbPorts;
+        } else {
+            System.out.println("Ошибка: количество USB-портов не может быть отрицательным! Значение не изменено.");
+        }
+    }
 }
