@@ -3,25 +3,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
-/**
- * ЛАБА 4: Класс для чтения устройств из текстового файла.
- * Принимает в качестве параметра поток файла (Reader).
- */
 public class DeviceFileReader {
 
-    // Результат чтения файла: список устройств и статистика
     public static class ReadResult {
         public List<NetworkDevice> devices = new ArrayList<>();
-        public int totalObjects;           // количество найденных объектов
-        public int totalPropertiesRead;    // сколько свойств успешно прочитано
-        public int totalPropertiesMissing; // сколько свойств не найдено
-        public List<String> errors = new ArrayList<>(); // ошибки парсинга
+        public int totalObjects;
+        public int totalPropertiesRead;
+        public int totalPropertiesMissing;
+        public List<String> errors = new ArrayList<>();
     }
 
-    /**
-     * Читает данные из потока и возвращает результат.
-     * @param reader поток для чтения (например, FileReader)
-     */
     public ReadResult read(Reader reader) throws IOException {
         ReadResult result = new ReadResult();
         BufferedReader br = new BufferedReader(reader);
@@ -30,7 +21,6 @@ public class DeviceFileReader {
         while ((line = br.readLine()) != null) {
             line = line.trim();
             if (line.isEmpty()) {
-                // Пустая строка — разделитель между объектами
                 if (!block.isEmpty()) {
                     processBlock(block, result);
                     block.clear();
@@ -39,16 +29,61 @@ public class DeviceFileReader {
                 block.add(line);
             }
         }
-        // Обработать последний блок, если файл не заканчивается пустой строкой
         if (!block.isEmpty()) {
             processBlock(block, result);
         }
         return result;
     }
 
-    /**
-     * Обрабатывает один блок строк (одно устройство).
-     */
     private void processBlock(List<String> block, ReadResult result) {
+        Map<String, String> props = new HashMap<>();
+        for (String line : block) {
+            int colon = line.indexOf(':');
+            if (colon == -1) {
+                result.errors.add("Неверная строка (нет двоеточия): " + line);
+                continue;
+            }
+            String key = line.substring(0, colon).trim().toLowerCase();
+            String value = line.substring(colon + 1).trim();
+            // Удаляем завершающий разделитель (запятую или точку с запятой), если есть
+            if (value.endsWith(",") || value.endsWith(";")) {
+                value = value.substring(0, value.length() - 1).trim();
+            }
+            props.put(key, value);
+        }
+
+        if (!props.containsKey("type")) {
+            result.errors.add("Блок не содержит поле 'Type': " + block);
+            return;
+        }
+
+        String type = props.get("type").toLowerCase();
+        NetworkDevice device = null;
+        Set<String> expectedFields = null;
+
+        switch (type) {
+            case "smartphone":
+                device = createSmartphone(props, result);
+                expectedFields = Set.of("manufacturer", "batterylevel", "cameramegapixels", "osversion", "screensize");
+                break;
+            case "tablet":
+                device = createTablet(props, result);
+                expectedFields = Set.of("manufacturer", "hasstylus", "storagegb", "weightkg", "screenresolution");
+                break;
+            case "computer":
+                device = createComputer(props, result);
+                expectedFields = Set.of("manufacturer", "ramgb", "cpumodel", "hasdedicatedgpu", "usbports");
+                break;
+            default:
+                result.errors.add("Неизвестный тип устройства: " + type);
+                return;
+        }
+
+
     }
+
+    // Заглушки для методов создания (в коммите  дальше)
+    private Smartphone createSmartphone(Map<String, String> props, ReadResult result) { return null; }
+    private Tablet createTablet(Map<String, String> props, ReadResult result) { return null; }
+    private Computer createComputer(Map<String, String> props, ReadResult result) { return null; }
 }
