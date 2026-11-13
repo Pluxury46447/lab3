@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+
 /**
  * Класс-наследник, представляющий смартфон.
  */
@@ -111,6 +112,15 @@ public class Smartphone extends NetworkDevice {
             this.osVersion = osVersion;
         } else {
             System.out.println("Ошибка: версия ОС не может быть пустой! Значение не изменено.");
+        }
+    }
+
+    // ЛАБА 4: сеттер для размера экрана (необходим для чтения из файла)
+    public void setScreenSize(double screenSize) {
+        if (screenSize > 0) {
+            this.screenSize = screenSize;
+        } else {
+            System.out.println("Ошибка: размер экрана должен быть положительным! Значение не изменено.");
         }
     }
 }
